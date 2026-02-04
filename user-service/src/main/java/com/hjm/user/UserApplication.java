@@ -1,13 +1,13 @@
-package com.hjm.item;
+package com.hjm.user;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@MapperScan("com.hjm.item.mapper")
+@MapperScan("com.hjm.user.mapper")
 @SpringBootApplication
-public class itemlApplication {
+public class UserApplication {
     public static void main(String[] args) {
-        SpringApplication.run(itemlApplication.class, args);
+        SpringApplication.run(UserApplication.class, args);
     }
 }

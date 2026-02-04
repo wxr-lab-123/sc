@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hjm.api.client.ItemClient;
 import com.hjm.api.dto.ItemDTO;
+import com.hjm.cart.config.CartProperties;
 import com.hjm.cart.domin.dto.CartFormDTO;
 import com.hjm.cart.domin.po.Cart;
 import com.hjm.cart.domin.vo.CartVO;
@@ -39,6 +40,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
 //    private final RestTemplate restTemplate;
 //    private final DiscoveryClient discoveryClient;
     private final ItemClient itemClient;
+    private final CartProperties cartProperties;
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
         // 1.获取登录用户
@@ -65,7 +67,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     @Override
     public List<CartVO> queryMyCarts() {
         // 1.查询我的购物车列表
-        List<Cart> carts = lambdaQuery().eq(Cart::getUserId, 1/* TODO UserContext.getUser()*/).list();
+        List<Cart> carts = lambdaQuery().eq(Cart::getUserId, UserContext.getUser()).list();
         if (CollUtils.isEmpty(carts)) {
             return CollUtils.emptyList();
         }
@@ -140,8 +142,10 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
 
     private void checkCartsFull(Long userId) {
         int count = lambdaQuery().eq(Cart::getUserId, userId).count();
-        if (count >= 10) {
-            throw new BizIllegalException(StrUtil.format("用户购物车课程不能超过{}", 10));
+        if (count >= cartProperties.getMaxItems()) {
+            throw new BizIllegalException(
+                    StrUtil.format("用户购物车课程不能超过{}", cartProperties.getMaxItems())
+            );
         }
     }
 
